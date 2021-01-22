@@ -1,0 +1,33 @@
+echo -ne "USERID \t\t NAME \t\t PHONE \t\t TTY \t\t WHAT\n"
+if [ $# -eq 0 ]; then
+        users=`who | cut -d " " -f1 | sort -u`
+else
+        if [ "$1" = "all" ]; then
+                users=`grep "BEARSMASK" /etc/passwd | cut -d ":" -f1 | sort -u`
+
+        else
+                for i in $@
+                do
+                        users="$users $i"
+                done
+
+
+        fi
+
+fi
+for user in $users
+        do
+                echo -en "$user \t"
+                name=`grep $user /etc/passwd | cut -d ":" -f5 | cut -d "," -f1`
+                echo -en "$name \t"
+                phone=`grep $user /etc/passwd | cut -d ":" -f5 | cut -d "," -f3`
+                echo -en "$phone \t"
+                tty=`w | grep $user | cut -d " " -f2`
+                what=`$tty | cut -d " " -f8`
+                if [ -z "$tty" ]; then
+                        tty="NOT ON"
+                        what="-"
+                fi
+                echo -en "$tty \t"
+                echo -e "$what \n"
+        done
