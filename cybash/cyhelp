@@ -1,0 +1,50 @@
+#!/bin/bash
+clear
+red=$'\e[1;31m'
+grn=$'\e[1;32m'
+yel=$'\e[1;33m'
+blu=$'\e[1;34m'
+mag=$'\e[1;35m'
+cyn=$'\e[1;36m'
+end=$'\e[0m'
+printf "%-60s" "${yel}COMMAND${end}"
+printf "%-10s" "${cyn}DESCRIPTION${end}"
+printf "\n"
+
+printf "%-60s" "cyshow ${yel}<filename>${end}"
+printf "%-10s" "${blu}Display filename${end}"
+printf "\n"
+
+
+printf "%-60s" "cycall ${yel}<userid>${end}"
+printf "%-10s" "${blu}Print user's full name and phone number${end}"
+printf "\n"
+
+printf "%-60s" "cylist ${yel}${end}"
+printf "%-10s" "${blu}Display full name of user's currently logged in.${end}"
+printf "\n"
+
+printf "%-60s" "cystuff ${yel}${end}"
+printf "%-10s" "${blu}Display contents of directory.${end}"
+printf "\n"
+
+printf "%-60s" "cyhelp ${yel}${end}"
+printf "%-10s" "${blu}Help menu.${end}"
+printf "\n"
+
+printf "%-60s" "cycrazy ${yel}${end}"
+printf "%-10s" "${blu}Matrix terminal (Press ctrl+c to exit).${end}"
+printf "\n"
+
+printf "%-60s" "cyvi ${yel}<filename>${end}"
+printf "%-10s" "${blu}Edit a file within cybash.${end}"
+printf "\n"
+
+printf "%-60s" "bigbrother ${yel}<all> <users> ... <userN>${end}"
+printf "%-10s" "${blu}Displays information about users online or specified users.${end}"
+printf "\n"
+
+printf "%-60s" "cybye ${yel}${end}"
+printf "%-10s" "${blu}Exits terminal.${end}"
+printf "\n"
+
