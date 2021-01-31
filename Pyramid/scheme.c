@@ -1,3 +1,8 @@
+// Brad Powell
+// CSC 460
+// 2/1/2021
+// Pyramid Scheme
+
 
 #include <stdio.h>
 
