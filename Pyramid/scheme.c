@@ -31,16 +31,17 @@ if (N > 5)
 
 printf("N: %d\n\n",N);
 
-printf("PID\tPPID\n\n");
+printf("GEN\tPID\tPPID\n\n");
 
 if(N!=0)
 {
 int i;
 for (i=0; i< N; i++)
+{
     fork();
+    printf("%d\t%d\t%d\n",i,getpid(),getppid());
 }
-printf("%d\t%d\n",getpid(),getppid());
-
+}
 sleep(1);
 
 printf("All Done.\n");
