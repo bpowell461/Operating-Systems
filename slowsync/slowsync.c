@@ -63,6 +63,10 @@ if (fork() == 0)
    myID=(myID+1)%N;
    otherID=(otherID+1)%N;
 }
+else
+{
+break;
+}
 }
 
 /*****  LOOP 100 Times  *****/
