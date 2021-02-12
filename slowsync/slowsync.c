@@ -1,3 +1,7 @@
+// Brad Powell
+// CSC 460
+// 2/5/2021
+// Slow Sync
 #include <stdio.h>
 
 main(int argc, char *argv[])
@@ -52,12 +56,14 @@ fclose(fp);
 /*****  Create Child process and give unique myID *****/
 int  myID = 0;
 int  otherID = 1;
+for (i=0; i< N; i++)
+{
 if (fork() == 0)
 {
    myID=(myID+1)%N;
    otherID=(otherID+1)%N;
 }
-
+}
 
 /*****  LOOP 100 Times  *****/
 
@@ -95,7 +101,6 @@ for (i=0; i<N; i++)
          }
      fprintf(fp,"%d",otherID);
      fclose(fp);
-     printf("Loop: %d and %d\n",myID,otherID);
 
 }
 
