@@ -1,3 +1,8 @@
+// Brad Powell
+// CSC 460
+// 2/22/2021
+// Faster Sync
+
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
