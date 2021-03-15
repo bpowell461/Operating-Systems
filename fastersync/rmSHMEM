@@ -1,8 +1,0 @@
-mids=`ipcs | grep powell_rb | cut -d" " -f2`
-
-for id in $mids
-do
-  ipcrm -m $id
-  ipcrm -s $id
-done
-
