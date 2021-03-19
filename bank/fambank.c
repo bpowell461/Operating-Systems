@@ -101,7 +101,7 @@ int main( int argc, char *argv[])
 						for(j=0;j<intArg;j++)
 						{
 							p(0,SemID);
-							printf("%d + %d = %d\n", *balance, amount, (*balance + amount));
+							printf("\t%d + %d = %d\n", *balance, amount, (*balance + amount));
 							*balance+=amount;
 							v(0,SemID);
 						}
