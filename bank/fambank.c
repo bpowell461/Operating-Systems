@@ -85,7 +85,7 @@ int main( int argc, char *argv[])
 				{
 					if(fork()==0)
 					{
-						amount=0-amount;
+						amount=-1*amount;
 					}
 				break;
 				}
