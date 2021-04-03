@@ -7,13 +7,12 @@
 
 void THINK( );
 void EAT( );
-void take_forks( int i, char* state, int utenID, int* clockMem );
-void put_forks( int i, char* state, int utenID );
-void test( int i, char* state, int utenID );
+void take_forks(int i);
+void put_forks(int i);
+void test(int i);
 void p( int s, int sem_id );
 void v( int s, int sem_id );
 
-// Define the possible diner states
 #define N 5
 #define THINKING 0
 #define HUNGRY 1
