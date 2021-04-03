@@ -55,14 +55,14 @@ int main(int argc, char *argv[])
 		{
 			printf("\t");
 		}
-		printf("%d THINKING", myID);
+		printf("%d THINKING\n", myID);
 		for(i=0; i<99999; i++); //busy loop
 
 		for(i=0;i<myID;i++)
                 {
                         printf("\t");
                 }
-		printf("%d HUNGRY", myID);
+		printf("%d HUNGRY\n", myID);
 		for(i=0; i<99999; i++); //busy loop
 
 		p(LEFT, semID);
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
                 {
                         printf("\t");
                 }
-		printf("%d EATING", myID);
+		printf("%d EATING\n", myID);
                 for(i=0; i<99999; i++); //busy loop
 
 		v(LEFT, semID);
