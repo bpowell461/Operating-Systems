@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 		v(FULL, sem_id);
 
 		
-		//printf("%d terminated with %d blocks in %d seconds\n", getpid(), atoi(argv[1]), atoi(argv[2]));
+		printf("%d terminated with %d blocks in %d seconds\n", getpid(), atoi(argv[1]), atoi(argv[2]));
 
 
 
