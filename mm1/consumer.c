@@ -11,11 +11,11 @@
 #include <sys/shm.h>
 
 typedef struct jobReq {
-	int PID;
-	char letter;
-	int size;
-	int sec;
-	int status;
+	int PID; //process id
+	char letter; //letter (A, B, C, etc.)
+	int size; //Data size
+	int sec; //Time to run
+	int status; //Process status: 0=waiting, 1=running, -1=terminated
 }job;
 
 void p(int s, int sem_id);
@@ -42,6 +42,13 @@ int main(int argc, char *argv[])
 	int rows = atoi(argv[1]);
 	int cols = atoi(argv[2]);
 	int bufferSize = atoi(argv[3]);
+	if(rows>20 || cols > 50 || bufferSize > 26)
+	{
+
+		printf("Invalid Parameters\n"); //Parameter Checking
+		return -1;
+
+	}
 	char* ram;
 	int ramID = shmget(IPC_PRIVATE, sizeof(char)*rows*cols, 0777);
 	int charID = shmget(IPC_PRIVATE, sizeof(char), 0777);
@@ -95,14 +102,14 @@ int main(int argc, char *argv[])
 
 	for(i=0; i<2; i++)
 	{
-		if(fork()!=0) break;
+		if(fork()!=0) break; //Forking off to act as helpers
 		myID++;
 	}
 
 
 	for(i=0; i<rows*cols;i++)
 	{
-		ram[i]='.';
+		ram[i]='.'; //Initializing Ram Structure Empty
 
 	}
 
@@ -114,7 +121,7 @@ int main(int argc, char *argv[])
 			p(FULL, sem_id);
 			p(MUTEX, sem_id);
 
-			currJobs[(*numJobs)]=shmem[FRONT.PID];
+			currJobs[(*numJobs)]=shmem[FRONT.PID]; //Separate shared array to represent the current jobs in queue
 			(*numJobs)++;	
 			FRONT.PID = (FRONT.PID + 1) % bufferSize;//updating FRONT
 			//printf("Received Job\n");	
@@ -138,7 +145,7 @@ int main(int argc, char *argv[])
 			for(j=0; j<*numJobs;j++)
 			{
 				int ramSize=rows*cols;
-				ramIndex = canRun(ram, ramSize, currJobs[j].size);
+				ramIndex = canRun(ram, ramSize, currJobs[j].size); //Gives the index at which a process can run in ram
 			//	printf("%c can fit at index %d\n", currJobs[j].letter, ramIndex);
 				if(ramIndex>=0 && currJobs[j].status != -1)
 				{
@@ -146,29 +153,24 @@ int main(int argc, char *argv[])
 					currJobs[j].status=1;
 					for(k=ramIndex; k<currJobs[j].size; k++)
 					{
-						ram[k]=currJobs[j].letter;
+						ram[k]=currJobs[j].letter; //Adding Job
 					}
 				
 				}
-				if(currJobs[j].sec==0)
+				if(currJobs[j].sec==0) //Job Removal
 				{
 					currJobs[j].status=-1;
 					for(k=0; k<rows*cols; k++)
 					{
 						if(ram[k]==currJobs[j].letter)
 						{
-							ram[k]='.';
+							ram[k]='.'; //Removal of Job
 						}
 
 					}
 					
 				}
 			}
-		if(*numJobs>=bufferSize)
-                        {
-                        if(isFinished(currJobs, *numJobs))
-                         break;
-                        }
 
 		sleep(1);
 		}
@@ -189,7 +191,7 @@ int main(int argc, char *argv[])
                   {
  			if(currJobs[j].status==1)
                         {
-                                        currJobs[j].sec--;
+                                        currJobs[j].sec--; //Included this here rather than in the job manager process to better sync up with display
                          }	
 		  }
 		  sleep(1);

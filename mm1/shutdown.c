@@ -67,6 +67,7 @@ int main(int argc, char *argv[])
 
 	system("./rmFiles");
 	system("rm idFile");
+	system("./rmshm");
 
 	printf("Shutting down...\n");
 	return 0;

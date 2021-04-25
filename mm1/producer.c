@@ -55,6 +55,16 @@ int main(int argc, char *argv[])
 		shmem[REAR.PID].letter=*shmChar;
 		shmem[REAR.PID].size=atoi(argv[1]);
 		shmem[REAR.PID].sec=atoi(argv[2]);
+	
+		int runSize=atoi(argv[1]);
+		int runTime=atoi(argv[2]);
+		int ramSize=rows*cols;
+		if(runSize > ramSize || runTime > 30)
+		{
+			printf("Invalid parameters\n");
+			return -1;
+		}
+
 		shmem[REAR.PID].status=0;
 		
 		(*shmChar)++;
