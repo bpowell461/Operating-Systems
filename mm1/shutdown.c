@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 {
 
 	FILE *fp, *fopen();
-        int rows, cols, bufferSize, shmid, sem_id, charID;
+        int rows, cols, bufferSize, shmid, sem_id, charID, endID;
 
         if((fp = fopen("idFile","r")) == NULL)
         {
@@ -45,15 +45,23 @@ int main(int argc, char *argv[])
         fscanf(fp, "%d", &rows);
         fscanf(fp, "%d", &cols);
         fscanf(fp, "%d", &bufferSize);
+	fscanf(fp, "%d", &endID);
         fclose(fp);
 
 
 	job *shmem = (struct jobReq*) shmat(shmid, NULL, SHM_RND);
 
+	int* endFlag = (int* ) shmat(endID, NULL, SHM_RND);
+
+	*endFlag=0;
 	
 	if (shmdt(shmem) == -1 ) printf("shmgm: ERROR in detaching.\n");
 	if ((shmctl(shmid, IPC_RMID, NULL)) == -1)
 		printf("ERROR in removing shmem.\n");
+
+	if (shmdt(endFlag) == -1 ) printf("shmgm: ERROR in detaching.\n");
+        if ((shmctl(endID, IPC_RMID, NULL)) == -1)
+                printf("ERROR in removing shmem.\n");
 	if ((semctl(sem_id, 0, IPC_RMID, 0)) == -1)
      		 printf("ERROR in removing sem\n");
 

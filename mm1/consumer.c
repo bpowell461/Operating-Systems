@@ -28,6 +28,7 @@ void displayJobs(job currJobs[], int numJobs);
 #define MUTEX 0
 #define EMPTY 2
 #define FULL 1
+#define END 3
 #define FRONT shmem[bufferSize]
 #define REAR  shmem[bufferSize+1]
 int main(int argc, char *argv[])
@@ -47,6 +48,7 @@ int main(int argc, char *argv[])
 	int shmid = shmget(IPC_PRIVATE, (bufferSize)*sizeof(struct jobReq), 0777);
 	int shmJobid = shmget(IPC_PRIVATE, sizeof(int), 0777);
 	int curID = shmget(IPC_PRIVATE, bufferSize*sizeof(struct jobReq), 0777);
+	int endID = shmget(IPC_PRIVATE, sizeof(int), 0777);
 	if (shmid == -1)
         {
                 printf("Could not get shared memory.\n");
@@ -55,12 +57,14 @@ int main(int argc, char *argv[])
 	shmem = (struct jobReq*) shmat(shmid, NULL, SHM_RND);
 	shmChar = (char*) shmat(charID, NULL, SHM_RND);
 	numJobs = (int* ) shmat(shmJobid, NULL, SHM_RND);
+	int* endFlag = (int* ) shmat(endID, NULL, SHM_RND);
 	currJobs = (struct jobReq*) shmat(curID, NULL, SHM_RND);
 	ram = (char*) shmat(ramID, NULL, SHM_RND);
 	*numJobs = 0;
 	*shmChar = 'A';
 	FRONT.PID = 0;
 	REAR.PID = 0;
+	*endFlag = 1;
 	if( (fp = fopen( "idFile", "w" )) == NULL ) {
                         printf( "Error Opening ID File\n" );
                         return 0;
@@ -82,6 +86,7 @@ int main(int argc, char *argv[])
 	fprintf(fp, "%d\n", rows);
 	fprintf(fp, "%d\n", cols);
 	fprintf(fp, "%d\n", bufferSize);
+	fprintf(fp, "%d\n", endID);
 	fclose(fp);
 	
 	int myID;
@@ -104,7 +109,7 @@ int main(int argc, char *argv[])
 	//display(ram, rows, cols);
 	if(myID==0)
 	{
-		while(1)
+		while(*endFlag!=0)
 		{
 			p(FULL, sem_id);
 			p(MUTEX, sem_id);
@@ -117,11 +122,6 @@ int main(int argc, char *argv[])
 			v(MUTEX, sem_id);
 			v(EMPTY, sem_id);
 			
-			if(*numJobs>=bufferSize)
-			{
-			if(isFinished(currJobs, *numJobs))
-                    	 break;
-			}
 
 		}
                 
@@ -133,12 +133,14 @@ int main(int argc, char *argv[])
 
 		int k;
 		int ramIndex;
-		while(1)
+		while(*endFlag!=0)
 		{
 			for(j=0; j<*numJobs;j++)
 			{
-				ramIndex = canRun(ram, rows*cols, currJobs[j].size);
-				if(ramIndex>=0 && currJobs[j].sec != 0)
+				int ramSize=rows*cols;
+				ramIndex = canRun(ram, ramSize, currJobs[j].size);
+			//	printf("%c can fit at index %d\n", currJobs[j].letter, ramIndex);
+				if(ramIndex>=0 && currJobs[j].status != -1)
 				{
 				
 					currJobs[j].status=1;
@@ -147,10 +149,6 @@ int main(int argc, char *argv[])
 						ram[k]=currJobs[j].letter;
 					}
 				
-				}
-				if(currJobs[j].status==1)
-				{
-					currJobs[j].sec--;
 				}
 				if(currJobs[j].sec==0)
 				{
@@ -166,9 +164,12 @@ int main(int argc, char *argv[])
 					
 				}
 			}
-		//if(isFinished(currJobs, *numJobs))
-		//	break;
-	
+		if(*numJobs>=bufferSize)
+                        {
+                        if(isFinished(currJobs, *numJobs))
+                         break;
+                        }
+
 		sleep(1);
 		}
 
@@ -177,17 +178,24 @@ int main(int argc, char *argv[])
 	else if(myID==2)
 	{
 
-		int r,c;
+		int r,c,j;
 		int ramIndex=0;
 
-		while(1)
+		while(*endFlag!=0)
 		{
 		  displayJobs(currJobs, *numJobs);
 		  display(ram, rows, cols);
-		  
+		  for(j=0; j<*numJobs;j++)
+                  {
+ 			if(currJobs[j].status==1)
+                        {
+                                        currJobs[j].sec--;
+                         }	
+		  }
 		  sleep(1);
-		}
+		
 
+		}
 
 	}
 	//system("killall consumer");
@@ -230,17 +238,18 @@ int canRun(char ram[], int ramSize, int runSize)
 		}
 		else
 		{
-			if(index>=runSize)
-			{
-				return i-index;
-			}
-			else
-			{
-				index=0;
-			}
+			index=0;
 		}
 	}
-	return -1;
+	if(index>=runSize)
+        {
+          return i-index;
+        }
+         else
+         {
+           return -1;
+         }
+
 }
 int isFinished(job currJobs[], int numJobs)
 {
